@@ -1,0 +1,13 @@
+{
+  "name": "grapple-js",
+  "version": "0.0.0",
+  "description": "game prototype using chem game engine",
+  "scripts": {
+    "dev": "npm install && chem dev"
+  },
+  "dependencies": {
+    "chem-cli": "~1.2.0",
+    "chem": "^4.1.0",
+    "box-2d-web": "^2.1.3"
+  }
+}
