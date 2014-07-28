@@ -28,11 +28,6 @@ chem.resources.on('ready', function () {
   var gravity = new b2Vec2(0, 9.8);
   var world = new b2World(gravity, true);
 
-  engine.on('buttondown', function(button) {
-    if (button === chem.button.KeyF11) {
-      fullScreenSomething(canvas);
-    }
-  });
   engine.on('update', function (dt, dx) {
   });
   engine.on('draw', function (context) {
@@ -47,15 +42,3 @@ chem.resources.on('ready', function () {
     fpsLabel.draw(context);
   });
 });
-
-function fullScreenSomething(elem) {
-  if (elem.requestFullscreen) {
-    elem.requestFullscreen();
-  } else if (elem.msRequestFullscreen) {
-    elem.msRequestFullscreen();
-  } else if (elem.mozRequestFullScreen) {
-    elem.mozRequestFullScreen();
-  } else if (elem.webkitRequestFullscreen) {
-    elem.webkitRequestFullscreen();
-  }
-}
