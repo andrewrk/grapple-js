@@ -1,8 +1,10 @@
 var chem = require("chem");
 var v = chem.vec2d;
+var Vec2d = chem.vec2d.Vec2d;
 var ani = chem.resources.animations;
 var canvas = document.getElementById("game");
 var engine = new chem.Engine(canvas);
+var tmx = require('chem-tmx');
 var Box2D = require('box-2d-web');
 var b2Vec2 = Box2D.Common.Math.b2Vec2;
 var b2BodyDef = Box2D.Dynamics.b2BodyDef;
@@ -21,12 +23,15 @@ engine.showLoadProgressBar();
 engine.start();
 canvas.focus();
 
+var metersPerPixel = 10 / 100;
+
 chem.resources.on('ready', function () {
   var batch = new chem.Batch();
   var boom = new chem.Sound('sfx/boom.ogg');
   var fpsLabel = engine.createFpsLabel();
   var gravity = new b2Vec2(0, 9.8);
   var world = new b2World(gravity, true);
+  var platforms = [];
 
   engine.on('update', function (dt, dx) {
   });
@@ -41,4 +46,57 @@ chem.resources.on('ready', function () {
     // draw a little fps counter in the corner
     fpsLabel.draw(context);
   });
+
+  tmx.load(chem, "level.tmx", function(err, map) {
+    if (err) throw err;
+    loadMap(map);
+  });
+
+  function loadMap(map) {
+    map.layers.forEach(function(layer) {
+      if (layer.type === 'object') {
+        layer.objects.forEach(loadMapObject);
+      }
+    });
+  }
+
+  function loadMapObject(obj) {
+    var pos = v(obj.x, obj.y);
+    var size = v(obj.width, obj.height);
+    var img = chem.resources.images[obj.properties.image];
+    switch (obj.name) {
+      case 'Platform':
+        var platform = {
+          pos: pos,
+          size: size,
+        };
+        if (img != null) {
+          platform.sprite = new chem.Sprite(chem.Animation.fromImage(img), {
+            batch: batch,
+            pos: pos,
+            scale: size.divBy(v(img.width, img.height)),
+          });
+        } else {
+          platform.sprite = null;
+        }
+        platform.bodyDef = new b2BodyDef();
+        platform.bodyDef.position = tob2(pos.plus(size).scale(0.5));
+        platform.body = world.CreateBody(platform.bodyDef);
+        platform.shape = new b2PolygonShape();
+        var shapeSize = tob2(size.scaled(0.5));
+        platform.shape.SetAsBox(shapeSize.x, shapeSize.y);
+        platform.body.CreateFixture(platform.platform.shape, 0);
+        platforms.push(platform);
+        break;
+    }
+  }
 });
+
+// vec in pixels, return b2vec2 in meters
+function tob2(vec) {
+  return new b2Vec2(vec.x * metersPerPixel, vec.y * metersPerPixel);
+}
+
+function fromb2(b2vec) {
+  return new Vec2d(b2vec.x / metersPerPixel, b2vec.y / metersPerPixel);
+}
