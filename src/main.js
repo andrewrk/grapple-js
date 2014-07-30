@@ -47,7 +47,7 @@ chem.resources.on('ready', function () {
     fpsLabel.draw(context);
   });
 
-  tmx.load(chem, "level.tmx", function(err, map) {
+  tmx.load(chem, "basic.tmx", function(err, map) {
     if (err) throw err;
     loadMap(map);
   });
@@ -63,7 +63,7 @@ chem.resources.on('ready', function () {
   function loadMapObject(obj) {
     var pos = v(obj.x, obj.y);
     var size = v(obj.width, obj.height);
-    var img = chem.resources.images[obj.properties.image];
+    var img = chem.resources.images[obj.properties.img];
     switch (obj.name) {
       case 'Platform':
         var platform = {
@@ -85,7 +85,7 @@ chem.resources.on('ready', function () {
         platform.shape = new b2PolygonShape();
         var shapeSize = tob2(size.scaled(0.5));
         platform.shape.SetAsBox(shapeSize.x, shapeSize.y);
-        platform.body.CreateFixture(platform.platform.shape, 0);
+        platform.body.CreateFixture2(platform.shape, 0);
         platforms.push(platform);
         break;
     }

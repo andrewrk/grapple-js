@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="100" height="100" tilewidth="32" tileheight="32">
+ <objectgroup name="Object Layer 1" width="100" height="100">
+  <object name="Platform" x="0" y="0" width="32" height="32">
+   <properties>
+    <property name="img" value="graybox.png"/>
+   </properties>
+  </object>
+  <object name="Platform" x="0" y="32" width="32" height="512">
+   <properties>
+    <property name="img" value="graybox.png"/>
+   </properties>
+  </object>
+  <object name="Platform" x="96" y="192" width="128" height="32">
+   <properties>
+    <property name="img" value="graybox.png"/>
+   </properties>
+  </object>
+  <object name="Platform" x="736" y="192" width="128" height="32">
+   <properties>
+    <property name="img" value="graybox.png"/>
+   </properties>
+  </object>
+  <object name="Platform" x="448" y="320" width="64" height="32">
+   <properties>
+    <property name="img" value="graybox.png"/>
+   </properties>
+  </object>
+  <object name="Start" x="96" y="480" width="32" height="32">
+   <properties>
+    <property name="player" value="0"/>
+   </properties>
+  </object>
+  <object name="Start" x="96" y="160" width="32" height="32">
+   <properties>
+    <property name="player" value="1"/>
+   </properties>
+  </object>
+  <object name="Start" x="832" y="160" width="32" height="32">
+   <properties>
+    <property name="player" value="3"/>
+   </properties>
+  </object>
+  <object name="Start" x="832" y="480" width="32" height="32">
+   <properties>
+    <property name="player" value="2"/>
+   </properties>
+  </object>
+  <object name="Platform" x="32" y="512" width="896" height="32">
+   <properties>
+    <property name="img" value="graybox.png"/>
+   </properties>
+  </object>
+  <object name="Platform" x="9" y="-175" width="32" height="32">
+   <properties>
+    <property name="img" value="graybox.png"/>
+   </properties>
+  </object>
+  <object name="Platform" x="928" y="32" width="32" height="512">
+   <properties>
+    <property name="img" value="graybox.png"/>
+   </properties>
+  </object>
+  <object name="Platform" x="928" y="0" width="32" height="32">
+   <properties>
+    <property name="img" value="graybox.png"/>
+   </properties>
+  </object>
+  <object name="Platform" x="32" y="0" width="896" height="32">
+   <properties>
+    <property name="img" value="graybox.png"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>
