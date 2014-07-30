@@ -40,6 +40,11 @@ chem.resources.on('ready', function () {
   ];
 
   engine.on('update', function (dt, dx) {
+    world.Step(dt, 8, 3);
+    players.forEach(function(player) {
+      player.sprite.pos = fromb2(player.body.GetPosition());
+      player.sprite.rotation = player.body.GetAngle();
+    });
   });
   engine.on('draw', function (context) {
     // clear canvas to black
@@ -70,8 +75,8 @@ chem.resources.on('ready', function () {
     var pos = v(obj.x, obj.y);
     var size = v(obj.width, obj.height);
     var img = chem.resources.images[obj.properties.img];
-    switch (obj.name) {
-      case 'Platform':
+    var handleFns = {
+      'Platform': function() {
         var platform = {
           pos: pos,
           size: size,
@@ -86,15 +91,15 @@ chem.resources.on('ready', function () {
           platform.sprite = null;
         }
         platform.bodyDef = new b2BodyDef();
-        platform.bodyDef.position = tob2(pos.plus(size).scale(0.5));
+        platform.bodyDef.position = tob2(pos.plus(size.scaled(0.5)));
         platform.body = world.CreateBody(platform.bodyDef);
         platform.shape = new b2PolygonShape();
         var shapeSize = tob2(size.scaled(0.5));
         platform.shape.SetAsBox(shapeSize.x, shapeSize.y);
         platform.body.CreateFixture2(platform.shape, 0);
         platforms.push(platform);
-        break;
-      case 'Start':
+      },
+      'Start': function() {
         var index = parseInt(obj.properties.player, 10);
         var player = players[index];
         player.sprite = new chem.Sprite(ani.still, {
@@ -102,10 +107,24 @@ chem.resources.on('ready', function () {
           pos: pos,
           scale: v(0.5, 0.5),
         });
-        break;
-    }
+        size = player.sprite.getSize();
+        player.bodyDef = new b2BodyDef();
+        player.bodyDef.type = b2Body.b2_dynamicBody;
+        player.bodyDef.position = tob2(pos.plus(size.scaled(0.5)));
+        player.body = world.CreateBody(player.bodyDef);
+        player.shape = new b2PolygonShape();
+        var shapeSize = tob2(size.scaled(0.5));
+        player.shape.SetAsBox(shapeSize.x, shapeSize.y);
+        player.fixtureDef = new b2FixtureDef();
+        player.fixtureDef.shape = player.shape;
+        player.fixtureDef.density = 1.0;
+        player.fixtureDef.friction = 0.3;
+        player.fixture = player.body.CreateFixture(player.fixtureDef);
+      },
+    };
+    var handleFn = handleFns[obj.name];
+    handleFn();
   }
-
 
   function Player(index) {
     this.index = index;

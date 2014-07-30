@@ -12,38 +12,26 @@ exports.spritesheet = {
   },
   animations: {
     arm: {
-      anchor: v(5, 12),
       frames: "arm.png",
       delay: 0.1,
-      offset: v(0, 0),
     },
     arm_flung: {
-      anchor: v(5, 12),
       frames: "arm-flung.png",
       delay: 0.1,
-      offset: v(0, 0),
     },
     claw: {
-      anchor: v(16, 18),
       delay: 0.1,
-      offset: v(0, 0),
     },
     still: {
-      anchor: v(16, 69-32),
       frames: "man.png",
       delay: 0.1,
-      offset: v(0, 0),
     },
     jump: {
-      anchor: v(23, 64-32),
       loop: false,
       delay: 0.1,
-      offset: v(0, 0),
     },
     walk: {
-      anchor: v(23, 64-32),
       delay: 0.05,
-      offset: v(0, 0),
     },
   },
 };
