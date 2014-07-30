@@ -10,5 +10,14 @@
     "chem-tmx": "~2.0.6",
     "chem": "~4.1.0",
     "box-2d-web": "~2.1.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/andrewrk/grapple-js.git"
+  },
+  "author": "Andrew Kelley <superjoe30@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/andrewrk/grapple-js/issues"
   }
 }
