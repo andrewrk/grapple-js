@@ -32,12 +32,18 @@ chem.resources.on('ready', function () {
   var gravity = new b2Vec2(0, 9.8);
   var world = new b2World(gravity, true);
   var platforms = [];
+  var players = [
+    new Player(0),
+    new Player(1),
+    new Player(2),
+    new Player(3),
+  ];
 
   engine.on('update', function (dt, dx) {
   });
   engine.on('draw', function (context) {
     // clear canvas to black
-    context.fillStyle = '#000000'
+    context.fillStyle = '#B5C4E5'
     context.fillRect(0, 0, engine.size.x, engine.size.y);
 
     // draw all sprites in batch
@@ -88,7 +94,21 @@ chem.resources.on('ready', function () {
         platform.body.CreateFixture2(platform.shape, 0);
         platforms.push(platform);
         break;
+      case 'Start':
+        var index = parseInt(obj.properties.player, 10);
+        var player = players[index];
+        player.sprite = new chem.Sprite(ani.still, {
+          batch: batch,
+          pos: pos,
+          scale: v(0.5, 0.5),
+        });
+        break;
     }
+  }
+
+
+  function Player(index) {
+    this.index = index;
   }
 });
 
