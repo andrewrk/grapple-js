@@ -25,11 +25,29 @@ canvas.focus();
 
 var metersPerPixel = 10 / 100;
 
+var getGamepads = getGetGamepadsFn();
+
 chem.resources.on('ready', function () {
   var batch = new chem.Batch();
   var boom = new chem.Sound('sfx/boom.ogg');
   var fpsLabel = engine.createFpsLabel();
-  var gravity = new b2Vec2(0, 9.8);
+  var gamepadsLabel = new chem.Label("Gamepads: none", {
+    pos: v(100, canvas.height - 20),
+    zOrder: 1,
+    fillStyle: "#ffffff",
+    batch: batch,
+    textAlign: 'left',
+    textBaseline: 'middle',
+  });
+  var physicsDebugLabel = new chem.Label("Physics debug", {
+    pos: v(300, canvas.height - 20),
+    zOrder: 1,
+    fillStyle: "#ffffff",
+    batch: batch,
+    textAlign: 'left',
+    textBaseline: 'middle',
+  });
+  var gravity = new b2Vec2(0, 100);
   var world = new b2World(gravity, true);
   var platforms = [];
   var players = [
@@ -38,12 +56,60 @@ chem.resources.on('ready', function () {
     new Player(2),
     new Player(3),
   ];
+  var playerMoveForceX = 12000;
+  var deadZoneThreshold = 0.20;
+  var instantStopThreshold = 1;
+  var playerJumpForce = v(0, -28000);
+  var maxPlayerSpeed = 200;
+  var maxJumpSpeed = 400;
 
   engine.on('update', function (dt, dx) {
     world.Step(dt, 8, 3);
+    world.ClearForces();
+
     players.forEach(function(player) {
       player.sprite.pos = fromb2(player.body.GetPosition());
       player.sprite.rotation = player.body.GetAngle();
+      player.resetButtons();
+    });
+
+    var gamepads = getGamepads();
+    var txtGamepads = [];
+    for (var i = 0; i < gamepads.length; i += 1) {
+      var gamepad = gamepads[i];
+      if (!gamepad || gamepad.index < 0 || gamepad.index >= 4) {
+        continue;
+      }
+      txtGamepads.push(gamepad.index + 1);
+      var player = players[gamepad.index];
+      player.xAxis = gamepad.axes[0];
+      if (Math.abs(player.xAxis) < deadZoneThreshold) {
+        player.xAxis = 0;
+      }
+      player.yAxis = gamepad.axes[1];
+      if (Math.abs(player.yAxis) < deadZoneThreshold) {
+        player.yAxis = 0;
+      }
+      player.btnPrimary = !!gamepad.buttons[0];
+      player.btnAlt = !!gamepad.buttons[2];
+    }
+    gamepadsLabel.text = "Gamepads: " + txtGamepads.join(", ");
+
+    players.forEach(function(player, index) {
+      var curVel = fromb2(player.body.GetLinearVelocity());
+      var desiredVelX = player.xAxis * maxPlayerSpeed;
+      if (desiredVelX === 0 && Math.abs(curVel.x) < instantStopThreshold) {
+        player.body.m_linearVelocity.x = 0;
+      } else {
+        if (curVel.x < desiredVelX) {
+          player.body.ApplyForce(tob2(new Vec2d(playerMoveForceX, 0)), player.body.GetWorldCenter());
+        } else if (curVel.x > desiredVelX) {
+          player.body.ApplyForce(tob2(new Vec2d(-playerMoveForceX, 0)), player.body.GetWorldCenter());
+        }
+      }
+      if (player.btnPrimary && curVel.y > -maxJumpSpeed) {
+        player.body.ApplyForce(tob2(playerJumpForce), player.body.GetWorldCenter());
+      }
     });
   });
   engine.on('draw', function (context) {
@@ -112,13 +178,14 @@ chem.resources.on('ready', function () {
         player.bodyDef.type = b2Body.b2_dynamicBody;
         player.bodyDef.position = tob2(pos.plus(size.scaled(0.5)));
         player.body = world.CreateBody(player.bodyDef);
+        player.body.SetFixedRotation(true);
         player.shape = new b2PolygonShape();
         var shapeSize = tob2(size.scaled(0.5));
         player.shape.SetAsBox(shapeSize.x, shapeSize.y);
         player.fixtureDef = new b2FixtureDef();
         player.fixtureDef.shape = player.shape;
         player.fixtureDef.density = 1.0;
-        player.fixtureDef.friction = 0.3;
+        player.fixtureDef.friction = 0.5;
         player.fixture = player.body.CreateFixture(player.fixtureDef);
       },
     };
@@ -126,10 +193,19 @@ chem.resources.on('ready', function () {
     handleFn();
   }
 
-  function Player(index) {
-    this.index = index;
-  }
 });
+
+function Player(index) {
+  this.index = index;
+  this.resetButtons();
+}
+
+Player.prototype.resetButtons = function() {
+  this.xAxis = 0;
+  this.yAxis = 0;
+  this.btnPrimary = false;
+  this.btnAlt = false;
+};
 
 // vec in pixels, return b2vec2 in meters
 function tob2(vec) {
@@ -138,4 +214,22 @@ function tob2(vec) {
 
 function fromb2(b2vec) {
   return new Vec2d(b2vec.x / metersPerPixel, b2vec.y / metersPerPixel);
+}
+
+function getGetGamepadsFn() {
+  if (navigator.getGamepads) {
+    return navigatorGetGamepads;
+  } else if (navigator.webkitGetGamepads) {
+    return webkitGetGamepads;
+  } else {
+    throw new Error("browser does not support gamepads");
+  }
+
+  function navigatorGetGamepads() {
+    return navigator.getGamepads();
+  }
+
+  function webkitGetGamepads() {
+    return navigator.webkitGetGamepads();
+  }
 }
