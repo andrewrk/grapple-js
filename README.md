@@ -6,6 +6,8 @@ Built with [chem](https://github.com/andrewrk/chem) rapid development game engin
 
 [Play in your browser](http://superjoe.s3.amazonaws.com/temp/grapple-js/index.html).
 
+**GO here instead:** https://github.com/andrewrk/grapple
+
 ## Screenshots
 
 ![](http://i.imgur.com/ewm6oKc.png)
